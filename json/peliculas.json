@@ -1,0 +1,13 @@
+{
+  "_id": ObjectId,
+  "titulo": "Avengers: Endgame",
+  "genero": "Acción",
+  "duracion": 180,
+  "funciones": [
+    {
+      "horario": "2025-06-01 20:00",
+      "asientos_disponibles": 45,
+      "asientos_totales": 50
+    }
+  ]
+}

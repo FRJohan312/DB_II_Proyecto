@@ -1,0 +1,14 @@
+{
+  "_id": ObjectId,
+  "nombre": "Juan Pérez",
+  "correo": "juan@example.com",
+  "historial_compras": [
+    {
+      "pelicula_id": ObjectId,
+      "funcion": "2025-06-01 20:00",
+      "cantidad": 2,
+      "total_pagado": 25000
+    }
+  ],
+  "preferencias": ["Acción", "Comedia"]
+}
