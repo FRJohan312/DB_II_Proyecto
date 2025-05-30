@@ -17,7 +17,7 @@ def mostrar_ventana_principal(usuario):
     if usuario["rol"] == "admin":
         tk.Button(ventana, text="Gestionar Películas", command=ventana_gestion_peliculas).pack(pady=10)
 
-    tk.Button(ventana, text="Comprar Entradas", command=lambda: VentanaCompraEntradas()).pack(pady=10)
+    tk.Button(ventana, text="Comprar Entradas", command=lambda: VentanaCompraEntradas(usuario)).pack(pady=10)
     tk.Button(ventana, text="Ver Historial de Compras", command=lambda: VentanaHistorialCompras(ventana, usuario["_id"])).pack(pady=10)
 
     ventana.mainloop()
