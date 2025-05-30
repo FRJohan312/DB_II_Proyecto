@@ -1,4 +1,4 @@
-from gui.main_window import mostrar_ventana_principal
+from gui.main_window import mostrar_ventana_login
 
 if __name__ == "__main__":
-    mostrar_ventana_principal()
+    mostrar_ventana_login()
