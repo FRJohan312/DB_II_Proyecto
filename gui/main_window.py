@@ -1,9 +1,10 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-from models.usuario import registrar_usuario, obtener_usuario_por_correo
+from models.usuario import registrar_usuario, obtener_usuario_por_correo, verificar_credenciales
 from gui.gestionar_peliculas import ventana_gestion_peliculas
 from gui.comprar_entradas import VentanaCompraEntradas
 from gui.historial_compras import VentanaHistorialCompras
+import bcrypt
 
 # Ventana Principal (según rol)
 def mostrar_ventana_principal(usuario):
@@ -33,12 +34,14 @@ def mostrar_ventana_login():
 
     def login():
         correo = entrada_correo.get().strip()
-        usuario = obtener_usuario_por_correo(correo)
+        contraseña = simpledialog.askstring("Contraseña", "Ingrese su contraseña:", show='*')
+
+        usuario = verificar_credenciales(correo, contraseña)
         if usuario:
             ventana.destroy()
             mostrar_ventana_principal(usuario)
         else:
-            messagebox.showerror("Error", "Usuario no encontrado.")
+            messagebox.showerror("Error", "Correo o contraseña invalidos.")
 
     def registrar():
         correo = entrada_correo.get().strip()
@@ -50,6 +53,10 @@ def mostrar_ventana_login():
         if not nombre:
             return
 
+        contraseña = simpledialog.askstring("Registro", "Contraseña:", show="*")
+        if not contraseña:
+            return
+
         preferencias_raw = simpledialog.askstring("Preferencias", "Géneros preferidos (separados por comas):")
         preferencias = [p.strip() for p in preferencias_raw.split(",")] if preferencias_raw else []
 
@@ -58,7 +65,7 @@ def mostrar_ventana_login():
             messagebox.showerror("Error", "Rol inválido.")
             return
 
-        resultado = registrar_usuario(nombre, correo, preferencias, rol)
+        resultado = registrar_usuario(nombre, correo, contraseña, preferencias, rol)
         if resultado:
             messagebox.showinfo("Éxito", "Usuario registrado correctamente.")
             usuario = {
@@ -72,6 +79,7 @@ def mostrar_ventana_login():
             mostrar_ventana_principal(usuario)
         else:
             messagebox.showerror("Error", "No se pudo registrar el usuario.")
+
 
     tk.Button(ventana, text="Ingresar", command=login).pack(pady=10)
     tk.Button(ventana, text="Registrarse", command=registrar).pack(pady=10)
