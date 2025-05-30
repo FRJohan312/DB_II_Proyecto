@@ -2,6 +2,7 @@ from bson import ObjectId
 from db import get_db
 import bcrypt
 from db import get_db
+from .entrada import obtener_historial_usuario
 
 def registrar_usuario(nombre, correo, contraseña, preferencias, rol):
     db = get_db()
@@ -33,11 +34,7 @@ def obtener_usuarios():
     return list(db.usuarios.find())
 
 def obtener_historial(usuario_id):
-    db = get_db()
-    usuario = db.usuarios.find_one({"_id": ObjectId(usuario_id)})
-    if usuario and "historial" in usuario:
-        return usuario["historial"]
-    return []
+    return obtener_historial_usuario(usuario_id)
 
 def verificar_credenciales(correo, contraseña):
     db = get_db()

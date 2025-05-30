@@ -82,9 +82,9 @@ def obtener_historial_usuario(id_usuario):
             pelicula = peliculas.find_one({"_id": entrada["id_pelicula"]})
             historial_detalles.append({
                 "pelicula": pelicula["nombre"] if pelicula else "Desconocida",
-                "hora_funcion": entrada["hora_funcion"],
+                "funcion": entrada["hora_funcion"],
                 "cantidad": entrada["cantidad"],
-                "fecha_compra": entrada["fecha_compra"]
+                "fecha": entrada["fecha_compra"]
             })
 
     return historial_detalles
