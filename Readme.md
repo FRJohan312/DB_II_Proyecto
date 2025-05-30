@@ -1,0 +1,1 @@
+# Ejecutar el app.py con el comando `python app.py` en la consola para evitar errores
