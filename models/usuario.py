@@ -1,7 +1,6 @@
 from bson import ObjectId
 from db import get_db
 import bcrypt
-from db import get_db
 from .entrada import obtener_historial_usuario
 
 def registrar_usuario(nombre, correo, contraseña, preferencias, rol):
