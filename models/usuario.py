@@ -1,34 +1,45 @@
-from db import get_db
 from bson import ObjectId
+from db import get_db
+import bcrypt
+from db import get_db
+from .entrada import obtener_historial_usuario
 
-db = get_db()
-usuarios = db["usuarios"]
-
-def registrar_usuario(nombre, correo, preferencias):
+def registrar_usuario(nombre, correo, contraseña, preferencias, rol):
     db = get_db()
     usuarios = db.usuarios
+
+    if usuarios.find_one({"correo": correo}):
+        return None
+    
+    password_encriptada = bcrypt.hashpw(contraseña.encode('utf-8'), bcrypt.gensalt())
 
     usuario = {
         "nombre": nombre,
         "correo": correo,
+        "contraseña": password_encriptada,
         "historial_compras": [],
-        "preferencias": preferencias  # ahora sí lo recibimos
+        "preferencias": preferencias,
+        "rol": rol
     }
 
     result = usuarios.insert_one(usuario)
-    print("Usuario insertado con ID:", result.inserted_id)
-
     return result.inserted_id
 
+def obtener_usuario_por_correo(correo):
+    db = get_db()
+    return db.usuarios.find_one({"correo": correo})
 
 def obtener_usuarios():
     db = get_db()
-    usuarios = db.usuarios.find()
-    return list(usuarios)
+    return list(db.usuarios.find())
 
 def obtener_historial(usuario_id):
+    return obtener_historial_usuario(usuario_id)
+
+def verificar_credenciales(correo, contraseña):
     db = get_db()
-    usuario = db.usuarios.find_one({"_id": ObjectId(usuario_id)})
-    if usuario and "historial" in usuario:
-        return usuario["historial"]
-    return []
+    usuario = db.usuarios.find_one({"correo": correo})
+    
+    if usuario and bcrypt.checkpw(contraseña.encode('utf-8'), usuario["contraseña"]):
+        return usuario  # Login correcto
+    return None  # Falló la verificación

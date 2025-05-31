@@ -6,9 +6,10 @@ from models.entrada import comprar_entrada, obtener_historial_usuario
 from datetime import datetime
 
 class VentanaCompraEntradas(tk.Toplevel):
-    def __init__(self):
+    def __init__(self, usuario_logeado):
         super().__init__()
         self.title("Compra de Entradas")
+        self.usuario_logeado = usuario_logeado
 
         # Obtener usuarios y películas
         self.usuarios = obtener_usuarios()
@@ -17,9 +18,13 @@ class VentanaCompraEntradas(tk.Toplevel):
         self.label_disponibilidad = tk.Label(self, text="Disponibilidad: N/A")
         self.label_disponibilidad.grid(row=3, column=2, padx=10)
 
-        tk.Label(self, text="Usuario:").grid(row=0, column=0)
-        self.usuario_combo = ttk.Combobox(self, values=[u["correo"] for u in self.usuarios])
-        self.usuario_combo.grid(row=0, column=1)
+        if self.usuario_logeado["rol"] == "admin":
+            tk.Label(self, text="Usuario:").grid(row=0, column=0)
+            self.usuario_combo = ttk.Combobox(self, values=[u["correo"] for u in self.usuarios])
+            self.usuario_combo.grid(row=0, column=1)
+        else:
+            tk.Label(self, text="Usuario:").grid(row=0, column=0)
+            tk.Label(self, text=self.usuario_logeado["correo"], fg="gray").grid(row=0, column=1)
 
         tk.Label(self, text="Película:").grid(row=1, column=0)
         self.pelicula_combo = ttk.Combobox(self, values=[p["nombre"] for p in self.peliculas])
@@ -55,7 +60,13 @@ class VentanaCompraEntradas(tk.Toplevel):
 
 
     def realizar_compra(self):
-        correo_usuario = self.usuario_combo.get()
+        if self.usuario_logeado["rol"] == "admin":
+            correo_usuario = self.usuario_combo.get()
+            usuario = next((u for u in self.usuarios if u["correo"] == correo_usuario), None)
+        else:
+            usuario = self.usuario_logeado
+            correo_usuario = usuario["correo"]
+
         pelicula_nombre = self.pelicula_combo.get()
         funcion_hora = self.funcion_combo.get()
         cantidad_str = self.entry_cantidad.get()
@@ -72,7 +83,6 @@ class VentanaCompraEntradas(tk.Toplevel):
             messagebox.showerror("Error", "Cantidad inválida")
             return
 
-        usuario = next((u for u in self.usuarios if u["correo"] == correo_usuario), None)
         pelicula = next((p for p in self.peliculas if p["nombre"] == pelicula_nombre), None)
 
         if not usuario or not pelicula:
