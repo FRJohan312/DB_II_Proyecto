@@ -80,9 +80,14 @@ def ventana_gestion_peliculas():
         limpiar_formulario()
         mostrar_peliculas()
 
-    btn_guardar = tk.Button(ventana, text="Guardar película", command=guardar_pelicula)
-    btn_guardar.grid(row=5, column=0, columnspan=2, pady=10)
+    btn_frame = tk.Frame(ventana)
+    btn_frame.grid(row=5, column=0, columnspan=2, pady=10)
 
+    btn_guardar = tk.Button(btn_frame, text="Guardar película", command=guardar_pelicula)
+    btn_guardar.pack(side="left", padx=10)
+
+    btn_regresar = tk.Button(btn_frame, text="Regresar", command=ventana.destroy)
+    btn_regresar.pack(side="left", padx=10)
     # --- Lista de películas ---
     frame_lista = tk.Frame(ventana)
     frame_lista.grid(row=6, column=0, columnspan=2)
