@@ -4,7 +4,6 @@ from models.usuario import registrar_usuario, obtener_usuario_por_correo, verifi
 from gui.gestionar_peliculas import ventana_gestion_peliculas
 from gui.comprar_entradas import VentanaCompraEntradas
 from gui.historial_compras import VentanaHistorialCompras
-import bcrypt
 
 # Ventana Principal (según rol)
 def mostrar_ventana_principal(usuario):
@@ -20,7 +19,16 @@ def mostrar_ventana_principal(usuario):
     tk.Button(ventana, text="Comprar Entradas", command=lambda: VentanaCompraEntradas(usuario)).pack(pady=10)
     tk.Button(ventana, text="Ver Historial de Compras", command=lambda: VentanaHistorialCompras(ventana, usuario["_id"])).pack(pady=10)
 
+    tk.Button(ventana, text="Cerrar Sesión", fg="white", bg="red", command=lambda: cerrar_sesion(ventana)).pack(pady=20)
+
     ventana.mainloop()
+
+def cerrar_sesion(ventana_actual):
+    ventana_actual.destroy()
+    mostrar_ventana_login()
+
+def salir(ventana_actual):
+    ventana_actual.destroy()
 
 # Ventana de Login y Registro
 def mostrar_ventana_login():
@@ -31,6 +39,8 @@ def mostrar_ventana_login():
     tk.Label(ventana, text="Correo electrónico:").pack(pady=5)
     entrada_correo = tk.Entry(ventana, width=40)
     entrada_correo.pack()
+
+    tk.Button(ventana, text="Salir", fg="white", bg="red", command=lambda: salir(ventana)).pack(pady=20)
 
     def login():
         correo = entrada_correo.get().strip()
