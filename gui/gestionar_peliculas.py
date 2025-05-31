@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from models.pelicula import agregar_pelicula, obtener_peliculas, eliminar_pelicula, editar_pelicula
+from servicios.pelicula import agregar_pelicula, obtener_peliculas, eliminar_pelicula, editar_pelicula
 from bson.objectid import ObjectId
 
 def ventana_gestion_peliculas():

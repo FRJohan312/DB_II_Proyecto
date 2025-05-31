@@ -1,7 +1,7 @@
 import re
 import tkinter as tk
 from tkinter import messagebox, simpledialog, StringVar, OptionMenu
-from models.usuario import registrar_usuario, verificar_credenciales
+from servicios.usuario import registrar_usuario, verificar_credenciales
 from gui.main_window import mostrar_ventana_principal
 
 def es_correo_valido(correo):

@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 from datetime import datetime
-from models.usuario import obtener_usuarios
-from models.pelicula import obtener_peliculas
-from models.entrada import comprar_entrada
+from servicios.usuario import obtener_usuarios
+from servicios.pelicula import obtener_peliculas
+from servicios.entrada import comprar_entrada
 from db import get_db
 
 PRECIO_ENTRADA = 9000  # Precio fijo por entrada

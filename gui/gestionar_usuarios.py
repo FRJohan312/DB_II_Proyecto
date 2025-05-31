@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-from models.usuario import obtener_usuarios, registrar_usuario, actualizar_usuario, eliminar_usuario
+from servicios.usuario import obtener_usuarios, registrar_usuario, actualizar_usuario, eliminar_usuario
 
 class VentanaGestionUsuarios(tk.Toplevel):
     def __init__(self):

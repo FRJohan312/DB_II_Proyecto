@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from models.usuario import obtener_historial
+from servicios.usuario import obtener_historial
 
 class VentanaHistorialCompras(tk.Toplevel):
     def __init__(self, master, usuario_id):
