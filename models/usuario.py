@@ -1,7 +1,6 @@
 from bson import ObjectId
 from db import get_db
 import bcrypt
-from db import get_db
 from .entrada import obtener_historial_usuario
 
 def registrar_usuario(nombre, correo, contraseña, preferencias, rol):
@@ -32,6 +31,27 @@ def obtener_usuario_por_correo(correo):
 def obtener_usuarios():
     db = get_db()
     return list(db.usuarios.find())
+
+def actualizar_usuario(usuario_id, nombre, preferencias, rol):
+    db = get_db()
+    usuarios = db.usuarios
+
+    resultado = usuarios.update_one(
+        {"_id": ObjectId(usuario_id)},
+        {"$set": {
+            "nombre": nombre,
+            "preferencias": preferencias,
+            "rol": rol
+        }}
+    )
+    return resultado.modified_count > 0
+
+def eliminar_usuario(usuario_id):
+    db = get_db()
+    usuarios = db.usuarios
+
+    resultado = usuarios.delete_one({"_id": ObjectId(usuario_id)})
+    return resultado.deleted_count > 0
 
 def obtener_historial(usuario_id):
     return obtener_historial_usuario(usuario_id)

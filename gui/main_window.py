@@ -4,6 +4,7 @@ from models.usuario import registrar_usuario, obtener_usuario_por_correo, verifi
 from gui.gestionar_peliculas import ventana_gestion_peliculas
 from gui.comprar_entradas import VentanaCompraEntradas
 from gui.historial_compras import VentanaHistorialCompras
+from gui.gestionar_usuarios import VentanaGestionUsuarios
 
 # Ventana Principal (según rol)
 def mostrar_ventana_principal(usuario):
@@ -15,7 +16,7 @@ def mostrar_ventana_principal(usuario):
 
     if usuario["rol"] == "admin":
         tk.Button(ventana, text="Gestionar Películas", command=ventana_gestion_peliculas).pack(pady=10)
-
+        tk.Button(ventana, text="Gestionar Usuarios", command=VentanaGestionUsuarios).pack(pady=10)
     tk.Button(ventana, text="Comprar Entradas", command=lambda: VentanaCompraEntradas(usuario)).pack(pady=10)
     tk.Button(ventana, text="Ver Historial de Compras", command=lambda: VentanaHistorialCompras(ventana, usuario["_id"])).pack(pady=10)
 
@@ -30,17 +31,15 @@ def cerrar_sesion(ventana_actual):
 def salir(ventana_actual):
     ventana_actual.destroy()
 
-# Ventana de Login y Registro
+ # Ventana de Login y Registro
 def mostrar_ventana_login():
     ventana = tk.Tk()
-    ventana.title("Login o Registro - Cine")
+    ventana.title("Login o Registro")
     ventana.geometry("400x250")
 
     tk.Label(ventana, text="Correo electrónico:").pack(pady=5)
     entrada_correo = tk.Entry(ventana, width=40)
     entrada_correo.pack()
-
-    tk.Button(ventana, text="Salir", fg="white", bg="red", command=lambda: salir(ventana)).pack(pady=20)
 
     def login():
         correo = entrada_correo.get().strip()
@@ -93,5 +92,6 @@ def mostrar_ventana_login():
 
     tk.Button(ventana, text="Ingresar", command=login).pack(pady=10)
     tk.Button(ventana, text="Registrarse", command=registrar).pack(pady=10)
+    tk.Button(ventana, text="Salir", fg="white", bg="purple", command=lambda: salir(ventana)).pack(pady=20)
 
     ventana.mainloop()
