@@ -20,7 +20,7 @@ class VentanaCompraEntradas(tk.Toplevel):
         self.usuarios = obtener_usuarios()
         self.peliculas = obtener_peliculas()
 
-        self.label_disponibilidad = tk.Label(self, text="Disponibilidad: N/A")
+        self.label_disponibilidad = tk.Label(self, text="Disponibilidad: NA")
         self.label_disponibilidad.grid(row=3, column=2, padx=10)
 
         self.label_precio_unitario = tk.Label(self, text=f"Precio por entrada: ${PRECIO_ENTRADA}")
@@ -55,8 +55,14 @@ class VentanaCompraEntradas(tk.Toplevel):
         self.combo_cantidad.set("1")
         self.combo_cantidad.bind("<<ComboboxSelected>>", self.actualizar_precio_total)
 
+        btn_frame = tk.Frame(self)
+        btn_frame.grid(row=5, column=0, columnspan=2, pady=10)
 
-        tk.Button(self, text="Continuar con el pago", command=self.mostrar_pasarela_pago).grid(row=5, column=0, columnspan=2, pady=10)
+        tk.Button(btn_frame, text="Continuar con el pago", command=self.mostrar_pasarela_pago)\
+            .pack(side="left", padx=10)
+
+        tk.Button(btn_frame, text="Regresar", command=self.destroy)\
+            .pack(side="left", padx=10)
 
         self.recibo_text = tk.Text(self, height=12, width=60)
         self.recibo_text.grid(row=6, column=0, columnspan=3)
@@ -65,7 +71,7 @@ class VentanaCompraEntradas(tk.Toplevel):
         pelicula_nombre = self.pelicula_combo.get()
         self.funcion_combo.set('')
         self.funcion_combo['values'] = []
-        self.label_disponibilidad.config(text="Disponibilidad: N/A")
+        self.label_disponibilidad.config(text="Disponibilidad: NA")
 
         pelicula = next((p for p in self.peliculas if p["nombre"] == pelicula_nombre), None)
         if pelicula:
@@ -142,7 +148,7 @@ class VentanaCompraEntradas(tk.Toplevel):
         cantidad_str = self.combo_cantidad.get()
 
         if not correo_usuario or not pelicula_nombre or not funcion_hora or not cantidad_str:
-            messagebox.showerror("Error", "Complete todos los campos")
+            messagebox.showerror("Error", "Complete todos los campos", parent=self)
             return
 
         try:
@@ -185,7 +191,7 @@ class VentanaCompraEntradas(tk.Toplevel):
             self.funcion_combo.set(funcion_hora)
             self.actualizar_disponibilidad()
         else:
-            messagebox.showerror("Error", mensaje)
+            messagebox.showerror("Error", mensaje, parent=self)
 
     def mostrar_recibo(self, usuario, pelicula, hora, cantidad, total, mensaje):
         self.recibo_text.delete("1.0", tk.END)
