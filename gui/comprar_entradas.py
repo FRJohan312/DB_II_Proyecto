@@ -70,7 +70,7 @@ class VentanaCompraEntradas(tk.Toplevel):
         btn_cancelar.pack(side="left", padx=10)
 
         # Recibo
-        self.recibo_text = tk.Text(self, height=12, width=60, bg="#FFFFFF", fg="#333333", insertbackground="#333333", font=FUENTE_NORMAL)
+        self.recibo_text = tk.Text(self, height=12, width=60, bg="#FFFFFF", fg="#333333", insertbackground="#333333", font=FUENTE)
         self.recibo_text.grid(row=6, column=0, columnspan=3, pady=(10,0))
 
     def cargar_funciones(self, event=None):
