@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from servicios.usuario import obtener_historial
 
 class VentanaHistorialCompras(tk.Toplevel):
@@ -7,10 +7,14 @@ class VentanaHistorialCompras(tk.Toplevel):
         super().__init__(master)
         self.title("Historial de Compras")
         self.geometry("600x400")
-
         self.usuario_id = usuario_id
 
-        self.tree = ttk.Treeview(self, columns=("pelicula", "funcion", "cantidad", "fecha"), show='headings')
+        # Árbol para mostrar historial
+        self.tree = ttk.Treeview(
+            self, columns=("pelicula", "funcion", "cantidad", "fecha"), show='headings'
+        )
+
+        # Encabezados del árbol
         self.tree.heading("pelicula", text="Película")
         self.tree.heading("funcion", text="Función")
         self.tree.heading("cantidad", text="Cantidad")
@@ -21,12 +25,21 @@ class VentanaHistorialCompras(tk.Toplevel):
         self.cargar_historial()
 
     def cargar_historial(self):
+        # Limpia el árbol antes de insertar nuevos datos
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
         historial = obtener_historial(self.usuario_id)
+
+        if not historial:
+            messagebox.showinfo("Sin compras", "Este usuario no tiene historial de compras.", parent=self)
+            return
+
+        # Insertar cada compra en el árbol
         for compra in historial:
             self.tree.insert("", "end", values=(
-                compra.get("pelicula", ""),
-                compra.get("funcion", ""),
-                compra.get("cantidad", ""),
-                compra.get("fecha", "")
+                compra.get("pelicula", "N/A"),
+                compra.get("funcion", "N/A"),
+                compra.get("cantidad", "N/A"),
+                compra.get("fecha", "N/A")
             ))
-    
