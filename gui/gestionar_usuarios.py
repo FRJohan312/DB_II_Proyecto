@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-from models.usuario import obtener_usuarios, registrar_usuario, actualizar_usuario, eliminar_usuario
+from servicios.usuario import obtener_usuarios, registrar_usuario, actualizar_usuario, eliminar_usuario
 
 class VentanaGestionUsuarios(tk.Toplevel):
     def __init__(self):
@@ -8,19 +8,21 @@ class VentanaGestionUsuarios(tk.Toplevel):
         self.title("Gestión de Usuarios")
         self.geometry("600x480")
 
-        self.usuarios = obtener_usuarios()
-
+        # Lista de usuarios y Listbox
+        self.usuarios = []
         self.lista = tk.Listbox(self, width=80)
         self.lista.pack(pady=10)
-        self.actualizar_lista()
 
+        # Botones
         btn_frame = tk.Frame(self)
         btn_frame.pack(pady=10)
-
         tk.Button(btn_frame, text="Crear", command=self.crear_usuario).grid(row=0, column=0, padx=5)
         tk.Button(btn_frame, text="Editar", command=self.editar_usuario).grid(row=0, column=1, padx=5)
         tk.Button(btn_frame, text="Eliminar", command=self.eliminar_usuario).grid(row=0, column=2, padx=5)
         tk.Button(btn_frame, text="Regresar", command=self.destroy).grid(row=0, column=3, padx=5)
+
+        self.actualizar_lista()
+
     def actualizar_lista(self):
         self.lista.delete(0, tk.END)
         self.usuarios = obtener_usuarios()
@@ -32,31 +34,41 @@ class VentanaGestionUsuarios(tk.Toplevel):
         correo = simpledialog.askstring("Correo", "Correo electrónico:", parent=self)
         contraseña = simpledialog.askstring("Contraseña", "Contraseña:", show="*", parent=self)
         preferencias = simpledialog.askstring("Preferencias", "Géneros preferidos (separados por comas):", parent=self)
+
+        if not all([nombre, correo, contraseña]):
+            messagebox.showerror("Error", "Nombre, correo y contraseña son obligatorios.", parent=self)
+            return
+
+        # Ventana para seleccionar rol
+        self.seleccionar_rol(lambda rol: self.confirmar_creacion(nombre, correo, contraseña, preferencias, rol))
+
+    def seleccionar_rol(self, callback):
         ventana_rol = tk.Toplevel(self)
         ventana_rol.title("Seleccionar Rol")
-        tk.Label(ventana_rol, text="Seleccione el rol:").pack(pady=5)
 
+        tk.Label(ventana_rol, text="Seleccione el rol:").pack(pady=5)
         rol_var = tk.StringVar(ventana_rol)
-        rol_var.set("usuario")  # valor por defecto
+        rol_var.set("usuario")
 
         opciones = ["admin", "usuario"]
         tk.OptionMenu(ventana_rol, rol_var, *opciones).pack(pady=5)
 
-        def confirmar_rol():
+        def confirmar():
             rol = rol_var.get()
             ventana_rol.destroy()
+            callback(rol)
 
-            if not all([nombre, correo, contraseña, rol]):
-                messagebox.showerror("Error", "Todos los campos son obligatorios.", parent=self)
-                return
+        tk.Button(ventana_rol, text="Confirmar", command=confirmar).pack(pady=10)
 
-            preferencias_lista = [p.strip() for p in preferencias.split(",")] if preferencias else []
-            resultado = registrar_usuario(nombre, correo, contraseña, preferencias_lista, rol)
-            if resultado:
-                messagebox.showinfo("Éxito", "Usuario creado correctamente.", parent=self)
-                self.actualizar_lista()
+    def confirmar_creacion(self, nombre, correo, contraseña, preferencias, rol):
+        preferencias_lista = [p.strip() for p in preferencias.split(",")] if preferencias else []
+        resultado = registrar_usuario(nombre, correo, contraseña, preferencias_lista, rol)
 
-        tk.Button(ventana_rol, text="Confirmar", command=confirmar_rol).pack(pady=10)
+        if resultado:
+            messagebox.showinfo("Éxito", "Usuario creado correctamente.", parent=self)
+            self.actualizar_lista()
+        else:
+            messagebox.showerror("Error", "No se pudo registrar el usuario.", parent=self)
 
     def editar_usuario(self):
         seleccion = self.lista.curselection()
@@ -76,9 +88,12 @@ class VentanaGestionUsuarios(tk.Toplevel):
 
         preferencias_lista = [p.strip() for p in preferencias.split(",")] if preferencias else []
         actualizado = actualizar_usuario(usuario["_id"], nombre, preferencias_lista, rol)
+
         if actualizado:
-            messagebox.showinfo("Éxito", "Usuario actualizado.")
+            messagebox.showinfo("Éxito", "Usuario actualizado.", parent=self)
             self.actualizar_lista()
+        else:
+            messagebox.showerror("Error", "No se pudo actualizar el usuario.", parent=self)
 
     def eliminar_usuario(self):
         seleccion = self.lista.curselection()
@@ -88,6 +103,11 @@ class VentanaGestionUsuarios(tk.Toplevel):
 
         usuario = self.usuarios[seleccion[0]]
         confirmacion = messagebox.askyesno("Eliminar", f"¿Eliminar al usuario {usuario['correo']}?", parent=self)
+
         if confirmacion:
-            eliminar_usuario(usuario["_id"])
-            self.actualizar_lista()
+            eliminado = eliminar_usuario(usuario["_id"])
+            if eliminado:
+                messagebox.showinfo("Éxito", "Usuario eliminado.", parent=self)
+                self.actualizar_lista()
+            else:
+                messagebox.showerror("Error", "No se pudo eliminar al usuario.", parent=self)

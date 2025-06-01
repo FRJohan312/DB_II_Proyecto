@@ -8,28 +8,54 @@ from gui.navigation import volver_al_login
 
 def mostrar_ventana_principal(usuario):
     try:
-        # Validación de campos esenciales
         if not isinstance(usuario, dict) or not all(k in usuario for k in ("nombre", "rol", "_id")):
             raise ValueError("Datos de usuario incompletos o incorrectos.")
 
         ventana = tk.Tk()
-        ventana.title("Panel Principal - Cine")
-        ventana.geometry("400x300")
+        ventana.title("Panel Principal")
+        ventana.geometry("450x400")
+        ventana.configure(bg="#f0f4f8")  # Fondo claro
 
-        tk.Label(ventana, text=f"Bienvenido, {usuario['nombre']} ({usuario['rol']})").pack(pady=10)
+        # Estilo global
+        fuente_titulo = ("Helvetica", 16, "bold")
+        fuente_boton = ("Helvetica", 12)
+        color_boton = "#4a90e2"
+        color_texto_boton = "white"
 
+        # Frame principal
+        frame = tk.Frame(ventana, bg="#f0f4f8")
+        frame.pack(expand=True)
+
+        # Bienvenida
+        bienvenida = tk.Label(
+            frame, 
+            text=f"Bienvenido, {usuario['nombre']} ({usuario['rol']})",
+            font=fuente_titulo, bg="#f0f4f8", fg="#333"
+        )
+        bienvenida.pack(pady=20)
+
+        def crear_boton(texto, comando, color=color_boton):
+            return tk.Button(
+                frame, text=texto, font=fuente_boton, width=25, height=2,
+                bg=color, fg=color_texto_boton, bd=0, activebackground="#357ABD",
+                command=proteger_funcion(comando)
+            )
+
+        # Opciones para administrador
         if usuario["rol"] == "admin":
-            tk.Button(ventana, text="Gestionar Películas", command=proteger_funcion(ventana_gestion_peliculas)).pack(pady=10)
-            tk.Button(ventana, text="Gestionar Usuarios", command=proteger_funcion(VentanaGestionUsuarios)).pack(pady=10)
+            crear_boton("🎞 Gestionar Películas", ventana_gestion_peliculas).pack(pady=5)
+            crear_boton("👥 Gestionar Usuarios", lambda: VentanaGestionUsuarios(ventana)).pack(pady=5)
 
-        tk.Button(ventana, text="Comprar Entradas",
-                  command=proteger_funcion(lambda: VentanaCompraEntradas(usuario))).pack(pady=10)
+        # Opciones comunes
+        crear_boton("🎟 Comprar Entradas", lambda: VentanaCompraEntradas(usuario)).pack(pady=5)
+        crear_boton("📜 Ver Historial de Compras", lambda: VentanaHistorialCompras(ventana, usuario["_id"])).pack(pady=5)
 
-        tk.Button(ventana, text="Ver Historial de Compras",
-                  command=proteger_funcion(lambda: VentanaHistorialCompras(ventana, usuario["_id"]))).pack(pady=10)
-
-        tk.Button(ventana, text="Cerrar Sesión", fg="white", bg="red",
-                  command=lambda: volver_al_login(ventana)).pack(pady=20)
+        # Botón cerrar sesión
+        tk.Button(
+            frame, text="⛔ Cerrar Sesión", font=fuente_boton, width=25, height=2,
+            bg="#e74c3c", fg="white", bd=0, activebackground="#c0392b",
+            command=lambda: volver_al_login(ventana)
+        ).pack(pady=20)
 
         ventana.mainloop()
 
@@ -37,9 +63,6 @@ def mostrar_ventana_principal(usuario):
         messagebox.showerror("Error crítico", f"Ocurrió un error al abrir el panel principal:\n{e}")
 
 def proteger_funcion(func):
-    """
-    Decorador de funciones para envolver los callbacks y evitar que errores rompan el flujo principal.
-    """
     def wrapper():
         try:
             func()
